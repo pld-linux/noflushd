@@ -1,0 +1,144 @@
+#!/bin/bash
+#
+# Start the noflush daemon to spin down idle disks.
+#
+# Written by Daniel Kobras <kobras@linux.de>
+# $Id$
+#
+# The next lines define runlevels and priorities to start this
+# skript. Syntax is <runlevels_to_start> <start_priority> <stop_priotity>.
+#
+# chkconfig: 2345 80 10
+# description: 	Start and stop the noflush daemon to handle spindown \
+#		of idle disks.
+#
+
+# Note: Edit TIMEOUT below to change the default timeout. If present, 
+# variable NOFLUSHD_TIMEOUT in /etc/rc.config will override this value.
+# However, highest priority is given to an environment variable TIMEOUT.
+# Example (assuming bash, skript in /etc/init.d/): 
+#
+# # TIMEOUT=60 /etc/init.d/noflushd restart
+#
+# to restart the daemon with 1 hour of idle timeout, overriding defaults.
+
+# XXX: In earlier versions, the timeout values were given in seconds.
+#      Now we use minutes instead. Don't get confused!
+
+# One IDE hard disk present:
+DISKS="/dev/hda"
+
+DEFAULT_TIMEOUT=60	# default timeout in minutes (EDIT THIS!)
+
+if [ -f /etc/rc.config ]; then
+	. /etc/rc.config
+	if [ "$START_NOFLUSHD" ]; then
+		[ "$START_NOFLUSHD" = "yes" ] || exit 0
+	fi	
+	if [ ! "$TIMEOUT" ]; then
+		[ "$NOFLUSHD_TIMEOUT" ] && TIMEOUT="$NOFLUSHD_TIMEOUT"
+	fi
+	[ "$NOFLUSHD_DISKS" ] && DISKS="$NOFLUSHD_DISKS"
+fi
+
+[ ! "$TIMEOUT" ] && TIMEOUT=$DEFAULT_TIMEOUT
+DAEMON=/sbin/noflushd
+OPTIONS="-v -n $TIMEOUT $DISKS"
+
+find_pid_by_name() {
+
+	NAME="$@"
+	for i in /proc/[1-9]*; do
+	(
+       		read TAG VALUE
+        	while [ $TAG ]; do
+                	if [ $TAG = "Name:" ]; then
+                        	if [ "$VALUE" = "$NAME" ]; then
+                                	exit $(basename $i)
+                        	fi
+                	fi
+                	read TAG VALUE
+        	done
+        	exit 0
+	) < $i/status || return $?
+	done
+	return 0
+}
+
+start_debian() {
+
+	/sbin/start-stop-daemon --start --quiet --exec $DAEMON -- $OPTIONS
+}
+
+stop_debian() {
+
+	/sbin/start-stop-daemon --stop --quiet --exec $DAEMON
+}
+
+start_redhat() {
+
+	daemon $DAEMON $OPTIONS
+}
+
+stop_redhat() {
+
+	killproc $DAEMON
+}
+
+start_generic() {
+	
+	find_pid_by_name $(basename $DAEMON) ||
+	echo "Warning! Another noflushd appears to be already running. Starting anyway."
+	$DAEMON $OPTIONS 2>&1 >/dev/null
+}
+
+stop_generic() {
+
+	find_pid_by_name $(basename $DAEMON) || kill $?
+}
+
+activate_kupdate() {
+
+	find_pid_by_name kupdate || kill -CONT $?
+}
+
+test -x $DAEMON || exit 0
+find_pid_by_name kupdate
+if [ $? -eq 0 ]; then
+	echo "No kupdate found. Run bdflush-1.6 for sleep support."
+	exit 0
+fi
+
+set -e 
+
+METHOD=generic
+[ -x /sbin/start-stop-daemon ] && METHOD=debian
+if [ -f /etc/rc.d/init.d/functions ]; then
+	. /etc/rc.d/init.d/functions && METHOD=redhat
+fi
+
+case "$1" in
+
+	start)
+		echo "Starting idle disk daemon with default timeout $TIMEOUT..."
+		start_$METHOD && echo "Done."
+		;;
+	stop)
+		echo -n "Stopping idle disk daemon"
+		stop_$METHOD && echo "."
+		activate_kupdate	# Paranoia.
+		;;
+	restart)
+		echo -n "Stopping idle disk daemon"
+		stop_$METHOD && echo "."
+		activate_kupdate	# Paranoia.
+		sleep 1
+		echo "Starting idle disk daemon with default timeout $TIMEOUT..."
+		start_$METHOD && echo "Done."
+		;;	
+	*)
+		echo "Usage: $(basename $0) {start|stop|restart}"
+		exit 1
+esac
+
+exit 0

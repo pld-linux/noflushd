@@ -1,0 +1,6 @@
+#
+# Start disk idle daemon noflushd?
+#
+START_NOFLUSHD="yes"
+NOFLUSHD_TIMEOUT=60	# timeout in minutes before disk is spun down
+NOFLUSHD_DISKS="/dev/hda"	# disks to be monitorred
