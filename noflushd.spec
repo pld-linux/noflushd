@@ -1,13 +1,13 @@
 Summary:	Daemon that sends idle disks to sleep
 Summary(pl):	Demon usypiaj±cy bezczynne dyski
 Name:		noflushd
-Version:	1.8.3
+Version:	2.5
 Release:	1
 License:	GPL
 Group:		Daemons
 Group(de):	Server
 Group(pl):	Serwery
-Source0:	http://download.sf.net/%{name}/%{name}_%{version}-1.tar.gz
+Source0:	ftp://download.sourceforge.net/pub/sourceforge/noflushd/%{name}-%{version}.tar.gz
 URL:		http://noflushd.sf.net/
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 Prereq:		/sbin/chkconfig
