@@ -43,8 +43,6 @@ install -d $RPM_BUILD_ROOT/etc/rc.d/init.d
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-gzip -9nf AUTHORS BUGS ChangeLog NEWS README THANKS TODO
-
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -59,7 +57,7 @@ fi
 
 %files
 %defattr(644,root,root,755)
-%doc *.gz
+%doc AUTHORS BUGS ChangeLog NEWS README THANKS TODO
 %attr(755,root,root) %{_sbindir}/noflushd
 %attr(754,root,root) /etc/rc.d/init.d/noflushd
 %{_mandir}/man8/noflushd.8*
