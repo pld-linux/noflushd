@@ -5,8 +5,6 @@ Version:	2.5
 Release:	1
 License:	GPL
 Group:		Daemons
-Group(de):	Server
-Group(pl):	Serwery
 Source0:	ftp://ftp.sourceforge.net/pub/sourceforge/noflushd/%{name}-%{version}.tar.gz
 URL:		http://noflushd.sf.net/
 BuildRequires:	autoconf
