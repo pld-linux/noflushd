@@ -22,10 +22,10 @@ functionality.
 
 %description -l pl
 noflushd jest prostym demonem monitoruj±cym aktywno¶æ dysków i
-zatrzymuj±cym te dyski, których czas bezczynno¶ci przekroczy³ okre¶lony
-limit. Wymaga w±tku kernela o nazwie kupdate - wystêpuj±cym od wersji
-2.2.11. Dla wcze¶niejszych kerneli program bdflush w wersji 1.6
-zapewnia t± sam± funkcjonalno¶æ.
+zatrzymuj±cym te dyski, których czas bezczynno¶ci przekroczy³
+okre¶lony limit. Wymaga w±tku kernela o nazwie kupdate - wystêpuj±cym
+od wersji 2.2.11. Dla wcze¶niejszych kerneli program bdflush w wersji
+1.6 zapewnia t± sam± funkcjonalno¶æ.
 
 %prep
 %setup -q
