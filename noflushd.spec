@@ -31,7 +31,7 @@ od wersji 2.2.11. Dla wcze¶niejszych kerneli program bdflush w wersji
 %setup -q
 
 %build
-autoconf
+%{__autoconf}
 %configure
 
 %{__make}
