@@ -59,7 +59,7 @@ if [ -z "`pidof kupdate`" ] && [ -z "`pidof kupdated`" ]; then
 	exit 0
 fi
 
-
+RETVAL=0
 case "$1" in
   start)
 	if [ ! -f /var/lock/subsys/noflushd ]; then
@@ -69,7 +69,6 @@ case "$1" in
 		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/noflushd
 	else
 		msg_already_running noflushd
-		exit 1
 	fi
 	;;
   stop)
@@ -79,20 +78,21 @@ case "$1" in
 		activate_kupdate	# Paranoia.
 	else
 		msg_not_running noflushd
-		exit 1
 	fi
 	;;
   status)
 	status noflushd
+	exit $?
 	;;
-  restart|reload)
+  restart|force-reload)
 	$0 stop
 	sleep 1
 	$0 start
+	exit $?
 	;;	
   *)
-	msg_usage "$0 {start|stop|restart|reload|status}"
-	exit 1
+	msg_usage "$0 {start|stop|restart|force-reload|status}"
+	exit 3
 esac
 
 exit $RETVAL
