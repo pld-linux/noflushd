@@ -50,16 +50,16 @@ find_pid_by_name() {
 	NAME="$@"
 	for i in /proc/[1-9]*; do
 	(
-       		read TAG VALUE
-        	while [ $TAG ]; do
-                	if [ $TAG = "Name:" ]; then
-                        	if [ "$VALUE" = "$NAME" ]; then
-                                	exit $(basename $i)
-                        	fi
-                	fi
-                	read TAG VALUE
-        	done
-        	exit 0
+		read TAG VALUE
+		while [ $TAG ]; do
+			if [ $TAG = "Name:" ]; then
+				if [ "$VALUE" = "$NAME" ]; then
+					exit $(basename $i)
+				fi
+			fi
+			read TAG VALUE
+		done
+		exit 0
 	) < $i/status || return $?
 	done
 	return 0
@@ -119,26 +119,26 @@ fi
 
 case "$1" in
 
-	start)
-		echo "Starting idle disk daemon with default timeout $TIMEOUT..."
-		start_$METHOD && echo "Done."
-		;;
-	stop)
-		echo -n "Stopping idle disk daemon"
-		stop_$METHOD && echo "."
-		activate_kupdate	# Paranoia.
-		;;
-	restart)
-		echo -n "Stopping idle disk daemon"
-		stop_$METHOD && echo "."
-		activate_kupdate	# Paranoia.
-		sleep 1
-		echo "Starting idle disk daemon with default timeout $TIMEOUT..."
-		start_$METHOD && echo "Done."
-		;;	
-	*)
-		echo "Usage: $(basename $0) {start|stop|restart}"
-		exit 1
+  start)
+	echo "Starting idle disk daemon with default timeout $TIMEOUT..."
+	start_$METHOD && echo "Done."
+	;;
+  stop)
+	echo -n "Stopping idle disk daemon"
+	stop_$METHOD && echo "."
+	activate_kupdate	# Paranoia.
+	;;
+  restart)
+	echo -n "Stopping idle disk daemon"
+	stop_$METHOD && echo "."
+	activate_kupdate	# Paranoia.
+	sleep 1
+	echo "Starting idle disk daemon with default timeout $TIMEOUT..."
+	start_$METHOD && echo "Done."
+	;;	
+  *)
+	msg_usage: "$0 {start|stop|restart}"
+	exit 1
 esac
 
 exit 0
