@@ -1,77 +1,34 @@
-%define	version	1.8.3
-
-Summary: Daemon that sends idle disks to sleep
-Name: noflushd
-Version: %{version}
-Release: 1
-Copyright: GPL
-Group: System Environment/Daemons
-Source0: noflushd_%{version}-1.tar.gz
-
-Buildroot:	/tmp/noflushd.rpmbuild
-%changelog
-
-* Mon Mar 13 2000 Daniel Kobras <kobras@linux.de>
-
-  Release 1.8.3-1:
-
-- New upstream version
-
-* Mon Feb  7 2000 Daniel Kobras <kobras@linux.de>
-
-  Release 1.8.2-1:
-
-- New upstream version
-
-* Thu Jan 27 2000 Daniel Kobras <kobras@linux.de>
-
-  Release 1.8.1-1:
-
-- New upstream version
-
-* Tue Jan 25 2000 Daniel Kobras <kobras@linux.de>
-
-  Release 1.8-1:
-
-- New upstream version
-
-* Sat Sep 04 1999 Daniel Kobras <kobras@linux.de>
-
-  Release 1.7.4-1:
-
-- Merged RedHat and SuSE specs
-
-* Fri Aug 27 1999 Daniel Kobras <kobras@linux.de>
-
-  Release 1.7.3-1:
-
-- Fixed several minor bugs in spec file
-
-* Wed Aug 25 1999 Daniel Kobras <kobras@linux.de>
-
-  Release 1.7.2-1:
-
-- Added RPM spec file stuff
+Summary:	Daemon that sends idle disks to sleep
+Name:		noflushd
+Version:	1.8.3
+Release:	1
+License:	GPL
+Group:		Daemons
+Group(pl):	Serwery
+Source0:	%{name}_%{version}-1.tar.gz
+Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
 noflushd is a simple daemon that monitors disk activity and spins down
-disks whose idle time exceeds a certain timeout. It requires a kernel thread
-named kupdate which is present in Linux kernel version 2.2.11 and later. For
-earlier kernels, bdflush version 1.6 provides equal functionality.
+disks whose idle time exceeds a certain timeout. It requires a kernel
+thread named kupdate which is present in Linux kernel version 2.2.11
+and later. For earlier kernels, bdflush version 1.6 provides equal
+functionality.
 
 %prep
-%setup -n noflushd-%{version}
+%setup -q -n noflushd-%{version}
 
 %build
-make USER_CFLAGS="$RPM_OPT_FLAGS"
+%{__make} USER_CFLAGS="$RPM_OPT_FLAGS"
 
 %install
-install -d -o root -g root -m 0750 $RPM_BUILD_ROOT/etc/rc.d/init.d
-make INSTALL_PREFIX=$RPM_BUILD_ROOT/ \
+rm -rf $RPM_BUILD_ROOT
+install -d -o root -m 0750 $RPM_BUILD_ROOT/etc/rc.d/init.d
+%{__make} INSTALL_PREFIX=$RPM_BUILD_ROOT/ \
      RCDIR=$RPM_BUILD_ROOT/etc/rc.d/init.d generic_install
 [ ! -d $RPM_BUILD_ROOT/var/adm/fillup-templates ] && \
  install -d -o root -g root -m 755 $RPM_BUILD_ROOT/var/adm/fillup-templates
-install -m 644 skripts/rc.config.noflushd $RPM_BUILD_ROOT/var/adm/fillup-templates/rc.config.noflushd
+install skripts/rc.config.noflushd $RPM_BUILD_ROOT/var/adm/fillup-templates/rc.config.noflushd
 %post
 echo "Updating startup files..."
 # SuSE init sucks. They have this rctab helper, but it's only for
@@ -109,11 +66,12 @@ if [ -x /sbin/chkconfig ]; then \
 fi; \
 fi
 %files
+%defattr(644,root,root,755)
 %doc	README
 %doc	COPYING
 %doc	ChangeLog
 %doc	contrib/
 	/sbin/noflushd
 	/etc/rc.d/init.d/noflushd
-	/usr/man/man8/noflushd.8
+%{_mandir}/man8/noflushd.8
 	/var/adm/fillup-templates/rc.config.noflushd
