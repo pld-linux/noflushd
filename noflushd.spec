@@ -6,6 +6,7 @@ Release:	1
 License:	GPL
 Group:		Daemons
 Source0:	http://dl.sourceforge.net/noflushd/%{name}_%{version}.orig.tar.gz
+# Source0-md5:	a4a47abdc08c65cbadd240354004155d
 # init script based on file distributed with sources
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
