@@ -6,6 +6,9 @@ Release:	1
 License:	GPL
 Group:		Daemons
 Source0:	http://dl.sourceforge.net/noflushd/%{name}_%{version}.orig.tar.gz
+# init script based on file distributed with sources
+Source1:	%{name}.init
+Source2:	%{name}.sysconfig
 URL:		http://noflushd.sf.net/
 BuildRequires:	autoconf
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -38,17 +41,20 @@ od wersji 2.2.11. Dla wcze¶niejszych kerneli program bdflush w wersji
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT/etc/rc.d/init.d
+install -d $RPM_BUILD_ROOT/etc/{rc.d/init.d,sysconfig}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
+
+install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
+install %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/%{name}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %post
 /sbin/chkconfig --add noflushd
-echo "NOTE: Edit /etc/rc.d/init.d/noflushd to set the default timeout (1h)."
+echo "NOTE: Edit %{_sysconfigdir}/etc/rc.d/init.d/noflushd to configure %{name}.
 
 %preun
 if [ "$1" = "0" ]; then
@@ -60,4 +66,5 @@ fi
 %doc AUTHORS BUGS ChangeLog NEWS README THANKS TODO
 %attr(755,root,root) %{_sbindir}/noflushd
 %attr(754,root,root) /etc/rc.d/init.d/noflushd
+%config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/%{name}
 %{_mandir}/man8/noflushd.8*
