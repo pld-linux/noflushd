@@ -7,8 +7,10 @@ License:	GPL
 Group:		Daemons
 Group(de):	Server
 Group(pl):	Serwery
-Source0:	%{name}_%{version}-1.tar.gz
-Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+Source0:	http://download.sf.net/%{name}/%{name}_%{version}-1.tar.gz
+URL:		http://noflushd.sf.net/
+BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+Prereq:		/sbin/chkconfig
 
 %description
 noflushd is a simple daemon that monitors disk activity and spins down
@@ -17,17 +19,27 @@ thread named kupdate which is present in Linux kernel version 2.2.11
 and later. For earlier kernels, bdflush version 1.6 provides equal
 functionality.
 
+%description -l pl
+noflushd jest prostym demonem monitoruj±cym aktywno¶æ dysków i
+zatrzymuj±cym te dyski, których czas bezczynno¶ci przekroczy³ okre¶lony
+limit. Wymaga w±tku kernela o nazwie kupdate - wystêpuj±cym od wersji
+2.2.11. Dla wcze¶niejszych kerneli program bdflush w wersji 1.6
+zapewnia t± sam± funkcjonalno¶æ.
+
 %prep
-%setup -q -n noflushd-%{version}
+%setup -q
 
 %build
 %{__make} USER_CFLAGS="%{rpmcflags}"
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d -m 0750 $RPM_BUILD_ROOT/etc/rc.d/init.d
+install -d $RPM_BUILD_ROOT/etc/rc.d/init.d
+
 %{__make} INSTALL_PREFIX=$RPM_BUILD_ROOT/ \
 	RCDIR=$RPM_BUILD_ROOT/etc/rc.d/init.d generic_install
+
+# what is this???
 [ ! -d $RPM_BUILD_ROOT/var/adm/fillup-templates ] && \
 	install -d -m 755 $RPM_BUILD_ROOT/var/adm/fillup-templates
 install skripts/rc.config.noflushd $RPM_BUILD_ROOT/var/adm/fillup-templates/rc.config.noflushd
