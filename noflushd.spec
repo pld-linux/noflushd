@@ -1,9 +1,11 @@
 Summary:	Daemon that sends idle disks to sleep
+Summary(pl):	Demon usypiaj±cy bezczynne dyski
 Name:		noflushd
 Version:	1.8.3
 Release:	1
 License:	GPL
 Group:		Daemons
+Group(de):	Server
 Group(pl):	Serwery
 Source0:	%{name}_%{version}-1.tar.gz
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -19,16 +21,20 @@ functionality.
 %setup -q -n noflushd-%{version}
 
 %build
-%{__make} USER_CFLAGS="$RPM_OPT_FLAGS"
+%{__make} USER_CFLAGS="%{rpmcflags}"
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d -o root -m 0750 $RPM_BUILD_ROOT/etc/rc.d/init.d
+install -d -m 0750 $RPM_BUILD_ROOT/etc/rc.d/init.d
 %{__make} INSTALL_PREFIX=$RPM_BUILD_ROOT/ \
-     RCDIR=$RPM_BUILD_ROOT/etc/rc.d/init.d generic_install
+	RCDIR=$RPM_BUILD_ROOT/etc/rc.d/init.d generic_install
 [ ! -d $RPM_BUILD_ROOT/var/adm/fillup-templates ] && \
- install -d -o root -g root -m 755 $RPM_BUILD_ROOT/var/adm/fillup-templates
+	install -d -m 755 $RPM_BUILD_ROOT/var/adm/fillup-templates
 install skripts/rc.config.noflushd $RPM_BUILD_ROOT/var/adm/fillup-templates/rc.config.noflushd
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
 %post
 echo "Updating startup files..."
 # SuSE init sucks. They have this rctab helper, but it's only for
@@ -55,6 +61,7 @@ else \
 fi; \
 echo "NOTE: Edit /etc/rc.d/init.d/noflushd to set the default timeout (1h)."; \
 fi
+
 %preun
 if [ -d /sbin/init.d ]; then \
 	for i in /sbin/init.d/rc?.d; do \
@@ -65,13 +72,11 @@ if [ -x /sbin/chkconfig ]; then \
 	/sbin/chkconfig --del noflushd; \
 fi; \
 fi
+
 %files
 %defattr(644,root,root,755)
-%doc	README
-%doc	COPYING
-%doc	ChangeLog
-%doc	contrib/
-	/sbin/noflushd
-	/etc/rc.d/init.d/noflushd
+%doc README ChangeLog contrib/
+%attr(755,root,root) /sbin/noflushd
+%attr(754,root,root) /etc/rc.d/init.d/noflushd
 %{_mandir}/man8/noflushd.8
-	/var/adm/fillup-templates/rc.config.noflushd
+/var/adm/fillup-templates/rc.config.noflushd
