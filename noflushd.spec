@@ -54,7 +54,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 /sbin/chkconfig --add noflushd
-echo "NOTE: Edit %{_sysconfigdir}/etc/rc.d/init.d/noflushd to configure %{name}.
+echo "NOTE: Edit /etc/sysconfig/noflushd to configure %{name}."
 
 %preun
 if [ "$1" = "0" ]; then
