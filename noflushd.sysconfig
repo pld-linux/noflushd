@@ -1,6 +1,9 @@
-#
-# Start disk idle daemon noflushd?
-#
-START_NOFLUSHD="yes"
-NOFLUSHD_TIMEOUT=60	# timeout in minutes before disk is spun down
-NOFLUSHD_DISKS="/dev/hda"	# disks to be monitorred
+# Change this to "yes" if you want to start noflushd at all
+START_NOFLUSHD="no"
+
+# Which disks you want to sleep when iddle?
+#NOFLUSHD_DISKS="/dev/hda"
+
+# Default timeout in minutes (use TIMEOUT environmet variable to override)
+#DEFAULT_TIMEOUT=60
+
