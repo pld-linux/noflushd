@@ -12,8 +12,9 @@ Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 URL:		http://noflushd.sf.net/
 BuildRequires:	autoconf
+PreReq:		rc-scripts
+Requires(post,preun):	/sbin/chkconfig
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
-Prereq:		/sbin/chkconfig
 
 %define		_sbindir	/sbin
 
