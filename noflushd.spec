@@ -5,7 +5,7 @@ Version:	2.6.1
 Release:	1
 License:	GPL
 Group:		Daemons
-Source0:	ftp://ftp.sourceforge.net/pub/sourceforge/noflushd/%{name}_%{version}.orig.tar.gz
+Source0:	http://dl.sourceforge.net/noflushd/%{name}_%{version}.orig.tar.gz
 URL:		http://noflushd.sf.net/
 BuildRequires:	autoconf
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
