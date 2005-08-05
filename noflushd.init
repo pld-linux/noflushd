@@ -26,13 +26,16 @@
 # XXX: In earlier versions, the timeout values were given in seconds.
 #      Now we use minutes instead. Don't get confused!
 
+# Source function library
+. /etc/rc.d/init.d/functions
+
 # One IDE hard disk present:
 DISKS="/dev/hda"
 
 # default timeout in minutes
 DEFAULT_TIMEOUT=60
 
-[ -f /etc/sysconfig/noflushd ] && ./etc/sysconfig/noflushd
+[ -f /etc/sysconfig/noflushd ] && . /etc/sysconfig/noflushd
 
 is_yes "$START_NOFLUSHD" || exit 0
 
@@ -47,15 +50,34 @@ is_yes "$START_NOFLUSHD" || exit 0
 PIDFILE=/var/run/noflushd.pid
 OPTIONS="-v -n $TIMEOUT $DISKS"
 
-activate_kupdate() {
-	PID=`pidof kupdate`
-	[ -z "$PID" ] && kill -CONT $PID
-	PID=`pidof kupdated`
-	[ -z "$PID" ] && kill -CONT $PID
+find_pid_by_name() {
+
+	NAME="$1"
+	for i in /proc/[1-9]*; do
+		# Use cat instead of shell redir because /proc/<pid> might
+		# have vanished before we had a chance to open an fd on
+		# status. The cat variant fails gracefully in this case.
+		cat "$i/status" 2> /dev/null | while read TAG VALUE; do
+			test "$TAG" = "Name:" || continue
+			test "$VALUE" != "$NAME" || return "$(basename $i)"
+			break
+		done || return $?
+	done
+	return 0
 }
 
-if [ -z "`pidof kupdate`" ] && [ -z "`pidof kupdated`" ]; then
-	nls "No kupdate[d] found. Run bdflush-1.6 for sleep support."
+activate_kupdate() {
+	find_pid_by_name kupdate || kill -CONT $?
+	find_pid_by_name kupdated || kill -CONT $?
+}
+
+found=0
+for name in pdflush kupdate kupdated; do
+	find_pid_by_name "$name" || { found=1; break; }
+done
+
+if [ "$found" -eq 0 ]; then
+	nls "No kupdate[d]/pdflush found. Run bdflush-1.6 for sleep support."
 	exit 0
 fi
 
@@ -63,7 +85,7 @@ RETVAL=0
 case "$1" in
   start)
 	if [ ! -f /var/lock/subsys/noflushd ]; then
-		show $(nls "Starting idle disk daemon with default timeout %s..." "$TIMEOUT")
+		msg_starting "idle disk with default timeout $TIMEOUT..."
 		daemon noflushd $OPTIONS
 		RETVAL=$?
 		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/noflushd
@@ -72,23 +94,24 @@ case "$1" in
 	fi
 	;;
   stop)
-	if [ ! -f /var/lock/subsys/noflushd ]; then
-		show "Stopping idle disk daemon"
+	if [ -f /var/lock/subsys/noflushd ]; then
+		msg_stopping "idle disk"
 		killproc noflushd
 		activate_kupdate	# Paranoia.
+		rm -f /var/lock/subsys/noflushd >/dev/null 2>&1
 	else
 		msg_not_running noflushd
 	fi
 	;;
   status)
 	status noflushd
-	exit $?
+	RETVAL=$?
 	;;
   restart|force-reload)
 	$0 stop
 	sleep 1
 	$0 start
-	exit $?
+	RETVAL=$?
 	;;	
   *)
 	msg_usage "$0 {start|stop|restart|force-reload|status}"
