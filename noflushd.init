@@ -112,7 +112,7 @@ case "$1" in
 	sleep 1
 	$0 start
 	RETVAL=$?
-	;;	
+	;;
   *)
 	msg_usage "$0 {start|stop|restart|force-reload|status}"
 	exit 3
