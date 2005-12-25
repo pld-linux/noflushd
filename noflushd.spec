@@ -10,8 +10,8 @@ Source0:	http://dl.sourceforge.net/noflushd/%{name}_%{version}.orig.tar.gz
 # init script based on file distributed with sources
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
-URL:		http://noflushd.sf.net/
-PreReq:		rc-scripts
+URL:		http://noflushd.sourceforge.net/
+Requires:	rc-scripts
 Requires(post,preun):	/sbin/chkconfig
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
