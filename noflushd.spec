@@ -1,5 +1,5 @@
 Summary:	Daemon that sends idle disks to sleep
-Summary(pl):	Demon usypiaj±cy bezczynne dyski
+Summary(pl.UTF-8):   Demon usypiajÄ…cy bezczynne dyski
 Name:		noflushd
 Version:	2.7.5
 Release:	1
@@ -24,12 +24,12 @@ thread named kupdate which is present in Linux kernel version 2.2.11
 and later or pdflush for 2.6 kernels. For earlier kernels, bdflush
 version 1.6 provides equal functionality.
 
-%description -l pl
-noflushd jest prostym demonem monitoruj±cym aktywno¶æ dysków i
-zatrzymuj±cym te dyski, których czas bezczynno¶ci przekroczy³
-okre¶lony limit. Wymaga w±tku j±dra o nazwie kupdate, wystêpuj±cego
-od wersji 2.2.11, lub pdflush dla j±der 2.6. Dla wcze¶niejszych
-j±der program bdflush w wersji 1.6 zapewnia t± sam± funkcjonalno¶æ.
+%description -l pl.UTF-8
+noflushd jest prostym demonem monitorujÄ…cym aktywnoÅ›Ä‡ dyskÃ³w i
+zatrzymujÄ…cym te dyski, ktÃ³rych czas bezczynnoÅ›ci przekroczyÅ‚
+okreÅ›lony limit. Wymaga wÄ…tku jÄ…dra o nazwie kupdate, wystÄ™pujÄ…cego
+od wersji 2.2.11, lub pdflush dla jÄ…der 2.6. Dla wczeÅ›niejszych
+jÄ…der program bdflush w wersji 1.6 zapewnia tÄ… samÄ… funkcjonalnoÅ›Ä‡.
 
 %prep
 %setup -q
