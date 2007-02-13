@@ -1,5 +1,5 @@
 Summary:	Daemon that sends idle disks to sleep
-Summary(pl.UTF-8):   Demon usypiający bezczynne dyski
+Summary(pl.UTF-8):	Demon usypiający bezczynne dyski
 Name:		noflushd
 Version:	2.7.5
 Release:	1
