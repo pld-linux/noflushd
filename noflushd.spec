@@ -11,6 +11,7 @@ Source0:	http://dl.sourceforge.net/noflushd/%{name}_%{version}.orig.tar.gz
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 URL:		http://noflushd.sourceforge.net/
+BuildRequires:	rpmbuild(macros) >= 1.268
 Requires:	rc-scripts
 Requires(post,preun):	/sbin/chkconfig
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -53,18 +54,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 /sbin/chkconfig --add noflushd
-if [ -f /var/lock/subsys/%{name} ]; then
-	/etc/rc.d/init.d/%{name} restart 1>&2
-else
-	echo "NOTE: Edit /etc/sysconfig/noflushd to configure %{name}."
-	echo "Run \"/etc/rc.d/init.d/%{name} start\" to start %{name} daemon."
-fi
+%service noflushd restart
 
 %preun
 if [ "$1" = "0" ]; then
-	if [ -f /var/lock/subsys/%{name} ]; then
-		/etc/rc.d/init.d/%{name} stop 1>&2
-	fi
+	%service noflushd stop
 	/sbin/chkconfig --del %{name}
 fi
 
